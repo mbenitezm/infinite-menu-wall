@@ -36,8 +36,11 @@ int th = 0;   /* azimuth of view angle */
 int ph = 7;   /* elevation of view angle */
 int fov = 55; /* field of view for perspective */
 int asp = 1;  /* aspect ratio */
+int movement_r = 0;
+int movement_l = 0;
+int units_moved = 0;
  
-/*  Cube vertices */
+/*  Pentagon vertices */
 GLfloat vertA[3] = { 0.5, 0.5, 0.5};
 GLfloat vertB[3] = {-0.5, 0.5, 0.5};
 GLfloat vertC[3] = {-0.5,-0.5, 0.5};
@@ -77,18 +80,8 @@ void project()
  */
 void setEye()
 {
-  if (toggleMode) {
-    double Ex = -2*dim*Sin(th)*Cos(ph);
-    double Ey = +2*dim        *Sin(ph);
-    double Ez = +2*dim*Cos(th)*Cos(ph);
-    /* camera/eye position, aim of camera lens, up-vector */
-    gluLookAt(Ex,Ey,Ez , 0,0,0 , 0,Cos(ph),0);
-  }
-  /*  Orthogonal - set world orientation */
-  else {
-    glRotatef(ph,1,0,0);
-    glRotatef(th,0,1,0);
-  }
+  glRotatef(ph,1,0,0);
+  glRotatef(th,0,1,0);
 }
 
 /*
@@ -183,7 +176,8 @@ void windowKey(unsigned char key,int x,int y)
   if (key == 27) exit(0);
   /*  Change dimensions */
   else if (key == 'D') dim += 0.1;
-  else if (key == 'd' && dim>1) dim -= 0.1;
+  else if (key == 'd') dim -= 0.1;
+  else if (key == 'm') th += 0.1;
  
   project();
   glutPostRedisplay();
@@ -197,9 +191,13 @@ void windowKey(unsigned char key,int x,int y)
 void windowSpecial(int key,int x,int y)
 {
   /*  Right arrow key - increase azimuth by 5 degrees */
-  if (key == GLUT_KEY_RIGHT) th += 5;
+  if (key == GLUT_KEY_RIGHT) {
+    movement_r = 1;
+  }
   /*  Left arrow key - decrease azimuth by 5 degrees */
-  else if (key == GLUT_KEY_LEFT) th -= 5;
+  else if (key == GLUT_KEY_LEFT) {
+    movement_l = 1;
+  }
  
   /*  Keep angles to +/-360 degrees */
   th %= 360;
@@ -207,6 +205,30 @@ void windowSpecial(int key,int x,int y)
  
   project();
   glutPostRedisplay();
+}
+
+void timer() {
+  if(movement_r == 1)
+    {
+      units_moved++;
+      th += 5;
+      if (units_moved == 18) {
+        units_moved = 0;
+        movement_r = 0;
+      }
+    }
+  else if (movement_l == 1)
+    {
+      units_moved++;
+      th -= 5;
+      if (units_moved == 18) {
+        units_moved = 0;
+        movement_l = 0;
+      }
+    }
+
+    glutTimerFunc( 16, timer, 0 );
+    glutPostRedisplay();
 }
  
 /*
@@ -234,6 +256,7 @@ int main(int argc,char* argv[])
   glutDisplayFunc(display);
   glutReshapeFunc(reshape);
   glutKeyboardFunc(windowKey);
+  glutTimerFunc( 0, timer, 0 );
   glutSpecialFunc(windowSpecial);
  
   glutCreateMenu(windowMenu);
