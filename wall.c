@@ -23,7 +23,7 @@
 #define Sin(th) sin(PI/180*(th))
  
 /*  Globals */
-double dim=1.0; /* dimension of orthogonal box */
+double dim=1.1; /* dimension of orthogonal box */
 char *windowName = "Infinite menu wall";
 int windowWidth=1000;
 int windowHeight=900;
@@ -33,22 +33,27 @@ int toggleAxes = 1;   /* toggle axes on and off */
 int toggleValues = 1; /* toggle values on and off */
 int toggleMode = 0; /* projection mode */
 int th = 0;   /* azimuth of view angle */
-int ph = 7;   /* elevation of view angle */
+int ph = 6;   /* elevation of view angle */
 int fov = 55; /* field of view for perspective */
 int asp = 1;  /* aspect ratio */
 int movement_r = 0;
 int movement_l = 0;
 int units_moved = 0;
+int units_needed = 12;
  
-/*  Pentagon vertices */
-GLfloat vertA[3] = { 0.5, 0.5, 0.5};
-GLfloat vertB[3] = {-0.5, 0.5, 0.5};
-GLfloat vertC[3] = {-0.5,-0.5, 0.5};
-GLfloat vertD[3] = { 0.5,-0.5, 0.5};
-GLfloat vertE[3] = { 0.5, 0.5,-0.5};
-GLfloat vertF[3] = {-0.5, 0.5,-0.5};
-GLfloat vertG[3] = {-0.5,-0.5,-0.5};
-GLfloat vertH[3] = { 0.5,-0.5,-0.5};
+/*  Hexagon vertices */
+GLfloat vertA[3] = { 0.5, 0.5, 0.9};
+GLfloat vertB[3] = {-0.5, 0.5, 0.9};
+GLfloat vertC[3] = {-0.5,-0.5, 0.9};
+GLfloat vertD[3] = { 0.5,-0.5, 0.9};
+GLfloat vertR1[3] = { 1.0, 0.5, 0};
+GLfloat vertR2[3] = { 1.0, -0.5, 0};
+GLfloat vertL1[3] = { -1.0, 0.5, 0};
+GLfloat vertL2[3] = { -1.0, -0.5, 0};
+GLfloat vertE[3] = { 0.5, 0.5,-0.9};
+GLfloat vertF[3] = {-0.5, 0.5,-0.9};
+GLfloat vertG[3] = {-0.5,-0.5,-0.9};
+GLfloat vertH[3] = { 0.5,-0.5,-0.9};
  
 /*
  * project()
@@ -91,7 +96,7 @@ void setEye()
  */
 void drawShape()
 {
-  /* Cube */
+  /* Hexagon */
   glBegin(GL_QUADS);
   /* front => ABCD yellow */
   glColor3f(1.0,1.0,0.0);
@@ -105,23 +110,41 @@ void drawShape()
   glVertex3fv(vertE);
   glVertex3fv(vertH);
   glVertex3fv(vertG);
-  /* right => EADH green */
+  /* right 1 => EADH green */
   glColor3f(0.0,1.0,0.0);
-  glVertex3fv(vertE);
+  glVertex3fv(vertR1);
   glVertex3fv(vertA);
   glVertex3fv(vertD);
+  glVertex3fv(vertR2);
+  /* right 2 => EADH green */
+  glColor3f(0.0,0.5,0.0);
+  glVertex3fv(vertE);
+  glVertex3fv(vertR1);
+  glVertex3fv(vertR2);
   glVertex3fv(vertH);
-  /* left => BFGC blue */
+  /* left 1=> BFGC blue */
   glColor3f(0.0,0.0,1.0);
   glVertex3fv(vertB);
-  glVertex3fv(vertF);
-  glVertex3fv(vertG);
+  glVertex3fv(vertL1);
+  glVertex3fv(vertL2);
   glVertex3fv(vertC);
-  /* top => EFBA turquoise */
+  /* left 2=> BFGC blue */
+  glColor3f(0.0,0.0,0.5);
+  glVertex3fv(vertF);
+  glVertex3fv(vertL1);
+  glVertex3fv(vertL2);
+  glVertex3fv(vertG);
+  /* top 1=> EFBA turquoise */
   glColor3f(0.0,1.0,1.0);
+  glVertex3fv(vertA);
+  glVertex3fv(vertB);
+  glVertex3fv(vertL1);
+  glVertex3fv(vertF);
+  /* top 2=> EFBA turquoise */
+  glColor3f(0.0,1.0,1.0);
+  glVertex3fv(vertR1);
   glVertex3fv(vertE);
   glVertex3fv(vertF);
-  glVertex3fv(vertB);
   glVertex3fv(vertA);
   /* bottom => DCGH pink */
   glColor3f(1.0,0.0,1.0);
@@ -177,7 +200,6 @@ void windowKey(unsigned char key,int x,int y)
   /*  Change dimensions */
   else if (key == 'D') dim += 0.1;
   else if (key == 'd') dim -= 0.1;
-  else if (key == 'm') th += 0.1;
  
   project();
   glutPostRedisplay();
@@ -212,7 +234,7 @@ void timer() {
     {
       units_moved++;
       th += 5;
-      if (units_moved == 18) {
+      if (units_moved == units_needed) {
         units_moved = 0;
         movement_r = 0;
       }
@@ -221,7 +243,7 @@ void timer() {
     {
       units_moved++;
       th -= 5;
-      if (units_moved == 18) {
+      if (units_moved == units_needed) {
         units_moved = 0;
         movement_l = 0;
       }
