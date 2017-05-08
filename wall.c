@@ -32,7 +32,7 @@ int windowHeight=900;
 int toggleAxes = 1;   /* toggle axes on and off */
 int toggleValues = 1; /* toggle values on and off */
 int toggleMode = 0; /* projection mode */
-int th = 0;   /* azimuth of view angle */
+int azimuth = 0;   /* azimuth of view angle */
 int ph = 6;   /* elevation of view angle */
 int fov = 55; /* field of view for perspective */
 int asp = 1;  /* aspect ratio */
@@ -86,7 +86,7 @@ void project()
 void setEye()
 {
   glRotatef(ph,1,0,0);
-  glRotatef(th,0,1,0);
+  glRotatef(azimuth,0,1,0);
 }
 
 /*
@@ -98,55 +98,55 @@ void drawShape()
 {
   /* Hexagon */
   glBegin(GL_QUADS);
-  /* front => ABCD yellow */
+  /* front  */
   glColor3f(1.0,1.0,0.0);
   glVertex3fv(vertA);
   glVertex3fv(vertB);
   glVertex3fv(vertC);
   glVertex3fv(vertD);
-  /* back => FEHG red */
+  /* back  */
   glColor3f(1.0,0.0,0.0);
   glVertex3fv(vertF);
   glVertex3fv(vertE);
   glVertex3fv(vertH);
   glVertex3fv(vertG);
-  /* right 1 => EADH green */
+  /* right 1  */
   glColor3f(0.0,1.0,0.0);
   glVertex3fv(vertR1);
   glVertex3fv(vertA);
   glVertex3fv(vertD);
   glVertex3fv(vertR2);
-  /* right 2 => EADH green */
+  /* right 2  */
   glColor3f(0.0,0.5,0.0);
   glVertex3fv(vertE);
   glVertex3fv(vertR1);
   glVertex3fv(vertR2);
   glVertex3fv(vertH);
-  /* left 1=> BFGC blue */
+  /* left 1 */
   glColor3f(0.0,0.0,1.0);
   glVertex3fv(vertB);
   glVertex3fv(vertL1);
   glVertex3fv(vertL2);
   glVertex3fv(vertC);
-  /* left 2=> BFGC blue */
+  /* left 2 */
   glColor3f(0.0,0.0,0.5);
   glVertex3fv(vertF);
   glVertex3fv(vertL1);
   glVertex3fv(vertL2);
   glVertex3fv(vertG);
-  /* top 1=> EFBA turquoise */
+  /* top 1 */
   glColor3f(0.0,1.0,1.0);
   glVertex3fv(vertA);
   glVertex3fv(vertB);
   glVertex3fv(vertL1);
   glVertex3fv(vertF);
-  /* top 2=> EFBA turquoise */
+  /* top 2 */
   glColor3f(0.0,1.0,1.0);
   glVertex3fv(vertR1);
   glVertex3fv(vertE);
   glVertex3fv(vertF);
   glVertex3fv(vertA);
-  /* bottom => DCGH pink */
+  /* bottom  */
   glColor3f(1.0,0.0,1.0);
   glVertex3fv(vertD);
   glVertex3fv(vertC);
@@ -222,7 +222,7 @@ void windowSpecial(int key,int x,int y)
   }
  
   /*  Keep angles to +/-360 degrees */
-  th %= 360;
+  azimuth %= 360;
   ph %= 360;
  
   project();
@@ -230,19 +230,19 @@ void windowSpecial(int key,int x,int y)
 }
 
 void timer() {
-  if(movement_r == 1)
+  if(movement_r)
     {
       units_moved++;
-      th += 5;
+      azimuth += 5;
       if (units_moved == units_needed) {
         units_moved = 0;
         movement_r = 0;
       }
     }
-  else if (movement_l == 1)
+  else if (movement_l)
     {
       units_moved++;
-      th -= 5;
+      azimuth -= 5;
       if (units_moved == units_needed) {
         units_moved = 0;
         movement_l = 0;
