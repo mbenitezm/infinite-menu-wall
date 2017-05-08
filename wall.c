@@ -1,3 +1,4 @@
+// C libraries
 #ifndef SCREENCASTS
 #define SCREENCASTS
 #include <stdio.h>
@@ -16,6 +17,9 @@
 #include <GL/glut.h>
 #endif
 #endif
+
+// Other header files
+#include "stack.h"
 
 #define PI 3.1415926535898
 
@@ -254,16 +258,6 @@ void timer() {
 }
  
 /*
- *  windowMenu
- *  ------
- *  Window menu is the same as the keyboard clicks
- */
-void windowMenu(int value)
-{
-  windowKey((unsigned char)value, 0, 0);
-}
- 
-/*
  *  main()
  *  ----
  *  Start up GLUT and tell it what to do
@@ -280,12 +274,6 @@ int main(int argc,char* argv[])
   glutKeyboardFunc(windowKey);
   glutTimerFunc( 0, timer, 0 );
   glutSpecialFunc(windowSpecial);
- 
-  glutCreateMenu(windowMenu);
-  glutAddMenuEntry("Toggle Axes [a]",'a');
-  glutAddMenuEntry("Toggle Values [v]",'v');
-  glutAddMenuEntry("Toggle Mode [m]",'m');
-  glutAttachMenu(GLUT_RIGHT_BUTTON);
  
   glutMainLoop();
   return 0;
