@@ -232,6 +232,7 @@ int currentFace = 0; /* current face: front */
 
 #define RIGHT 1
 #define LEFT 2
+#define PRINT 3
 
 /*  Hexagon vertices */
 GLfloat vertA[3] = { 0.5, 0.5, 0.9};
@@ -635,6 +636,58 @@ void windowSpecial(int key,int x,int y)
   glutPostRedisplay();
 }
 
+void generateObjFile () {
+  FILE *f = fopen("hexagon.obj", "w");
+
+  const char *v1 = "v 0.50 0.50 0.90 ";
+  const char *v2 = "v -0.50 0.50 0.90 ";
+  const char *v3 = "v -0.50 -0.50 0.90 ";
+  const char *v4 = "v 0.50 -0.50 0.90 ";
+  const char *v5 = "v 1.0 0.50 0.0 ";
+  const char *v6 = "v 1.0 -0.50 0.0 ";
+  const char *v7 = "v -1.0 0.50 0.0 ";
+  const char *v8 = "v -1.0 -0.50 0.0 ";
+  const char *v9 = "v 0.50 0.50 -0.90 ";
+  const char *v10 = "v -0.50 0.50 -0.90 ";
+  const char *v11 = "v -0.50 -0.50 -0.90 ";
+  const char *v12 = "v 0.50 -0.50 -0.90 ";
+
+  fprintf(f, "%s\n", v1);
+  fprintf(f, "%s\n", v2);
+  fprintf(f, "%s\n", v3);
+  fprintf(f, "%s\n", v4);
+  fprintf(f, "%s\n", v5);
+  fprintf(f, "%s\n", v6);
+  fprintf(f, "%s\n", v7);
+  fprintf(f, "%s\n", v8);
+  fprintf(f, "%s\n", v9);
+  fprintf(f, "%s\n", v10);
+  fprintf(f, "%s\n", v11);
+  fprintf(f, "%s\n\n", v12);
+
+  const char *f1 = "f 1 2 3 4";
+  const char *f2 = "f  9 10 11 12";
+  const char *f3 = "f  5 1 4 6";
+  const char *f4 = "f  9 5 6 12";
+  const char *f5 = "f  2 7 8 3";
+  const char *f6 = "f  10 7 8 11";
+  const char *f7 = "f  1 2 7 10";
+  const char *f8 = "f  5 9 10 1";
+  const char *f9 = "f  4 3 11 12";
+
+  fprintf(f, "%s\n", f1);
+  fprintf(f, "%s\n", f2);
+  fprintf(f, "%s\n", f3);
+  fprintf(f, "%s\n", f4);
+  fprintf(f, "%s\n", f5);
+  fprintf(f, "%s\n", f6);
+  fprintf(f, "%s\n", f7);
+  fprintf(f, "%s\n", f8);
+  fprintf(f, "%s\n", f9);
+
+  fclose(f);
+}
+
 void processMenuEvents(int option) {
   switch (option) {
     case RIGHT :
@@ -647,6 +700,9 @@ void processMenuEvents(int option) {
       changeFace(1);
       changeColor(0);
       break;
+    case PRINT :
+      generateObjFile();
+      break;
   }
 }
  
@@ -658,6 +714,7 @@ void createGLUTMenus() {
  
   glutAddMenuEntry("->",RIGHT);
   glutAddMenuEntry("<-",LEFT);
+  glutAddMenuEntry("Get .OBJ", PRINT);
  
   glutAttachMenu(GLUT_LEFT_BUTTON);
 }
