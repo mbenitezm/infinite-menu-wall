@@ -1,3 +1,9 @@
+/* The Architects
+*  -------------------
+*  Marcel Benitez
+*  Axel Ramirez
+*  Patricio Sanchez */
+
 // C libraries
 #ifndef SCREENCASTS
 #define SCREENCASTS
