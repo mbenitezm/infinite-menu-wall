@@ -18,8 +18,229 @@
 #endif
 #endif
 
-// Other header files
-#include "stack.h"
+/* ============== STACK STRUCT ============== */
+
+#define MAXSIZE 100
+
+struct Stack
+{
+  float stack [MAXSIZE][3];
+  int top;
+};
+typedef struct Stack STACK;
+
+STACK right;
+STACK left;
+
+/* List globals */
+float currentRed;
+float currentGreen;
+float currentBlue;
+
+/* List functions */
+void push(float r, float g, float b, int direction);
+void visit(int direction);
+int isEmpty(int direction);
+void initialize(int start, int direction);
+
+/*
+ * push()
+ * ------
+ * Push value if array space is empty
+ */
+void push(float r, float g, float b, int direction)
+{
+  // Right
+  if (direction == 1)
+  {
+    if (right.top == MAXSIZE)
+    {
+      printf("Right stack full\n");
+    }
+    else
+    {
+      if (isEmpty(direction) == 1)
+      {
+        right.top = right.top + 1;
+        right.stack[right.top][0] = r;
+        right.stack[right.top][1] = g;
+        right.stack[right.top][2] = b;
+      }
+    }
+  }
+  // Left
+  else
+  {
+    if (left.top == MAXSIZE)
+    {
+      printf("Left stack full\n"); 
+    }
+    else {
+      if (isEmpty(direction) == 1)
+      {
+        left.top = left.top + 1;
+        left.stack[left.top][0] = r;
+        left.stack[left.top][1] = g;
+        left.stack[left.top][2] = b;
+      }
+    }
+  }
+}
+
+/*
+ * isEmpty()
+ * ------
+ * Check value if is empty
+ */
+int isEmpty(int direction)
+{
+  // Right
+  if (direction == 1)
+  {
+    if (right.top == -1)
+    {
+      return 1;
+    }
+    else
+    {
+      if (right.stack[right.top][0] == -1)
+      {
+        return 1;
+      }
+
+      return 0;
+    }
+  }
+  else
+  {
+    if (left.top == -1)
+    {
+      return 1;
+    }
+    else
+    {
+      if (left.stack[left.top][0] == -1)
+      {
+        return 1;
+      }
+      
+      return 0;
+    }
+  }
+}
+
+/*
+ * visit()
+ * ------
+ * Visits current list space
+ */
+void visit(int direction)
+{
+  // Right
+  if (direction == 1)
+  {
+    currentRed = right.stack[right.top][0];
+    currentGreen = right.stack[right.top][1];
+    currentBlue = right.stack[right.top][2];
+
+    right.top = right.top - 1;
+  }
+  // Left
+  else
+  {
+    currentRed = left.stack[left.top][0];
+    currentGreen = left.stack[left.top][1];
+    currentBlue = left.stack[left.top][2];
+
+    left.top = left.top - 1;
+  }
+}
+
+/*
+ * initialize()
+ * ------
+ * Sets the initial matrix values to -1
+ */
+void initialize(int start, int direction)
+{
+  if (direction == 1)
+  {
+    for (int i = start; i < MAXSIZE; i ++)
+    {
+      right.stack[i][0] = -1;
+      right.stack[i][1] = -1;
+      right.stack[i][2] = -1;
+    }
+  }
+  else
+  {
+    for (int i = start; i < MAXSIZE; i ++)
+    {
+      left.stack[i][0] = -1;
+      left.stack[i][1] = -1;
+      left.stack[i][2] = -1;
+    } 
+  }
+}
+
+
+// void growList(int direction)
+// {
+//   if (direction == 1)
+//   {
+//     int tempMAXSIZE = rightMAXSIZE * 2;
+//     float temp[3];
+
+//     // for (int i = 0; i < rightMAXSIZE; i ++)
+//     // {
+//     //   temp[i][0] = right.stack[i][0];
+//     //   temp[i][1] = right.stack[i][1];
+//     //   temp[i][2] = right.stack[i][2];
+//     // }
+
+//     float **tmp = realloc(right.stack, tempMAXSIZE*sizeof(temp));
+//     // Reallocation correct
+//     if (tmp)
+//     {
+//       right.stack = tmp;
+//     }
+//     //Error - Out of memory
+//     else
+//     {
+//       exit(1);
+//     }
+//     initialize(rightMAXSIZE, 1);
+//     rightMAXSIZE = tempMAXSIZE;
+//   }
+//   else
+//   {
+//     int tempMAXSIZE = leftMAXSIZE * 2;
+//     float temp[3];
+
+//     // for (int i = 0; i < leftMAXSIZE; i ++)
+//     // {
+//     //   temp[i][0] = left.stack[i][0];
+//     //   temp[i][1] = left.stack[i][1];
+//     //   temp[i][2] = left.stack[i][2];
+//     // }
+
+//     float **tmp = realloc(left.stack, tempMAXSIZE*sizeof(temp));
+//     // Reallocation correct
+//     if (tmp)
+//     {
+//       left.stack = tmp;
+//     }
+//     //Error - Out of memory
+//     else
+//     {
+//       exit(1);
+//     }
+//     initialize(leftMAXSIZE, 1);
+//     leftMAXSIZE = tempMAXSIZE;
+//   }
+// }
+
+/* ============== OPENGL ============== */
 
 #define PI 3.1415926535898
 
@@ -31,6 +252,26 @@ double dim=1.1; /* dimension of orthogonal box */
 char *windowName = "Infinite menu wall";
 int windowWidth=1000;
 int windowHeight=900;
+
+/* Initialize colors as white, except front */
+float rFront = 1.0;
+float gFront = 1.0;
+float bFront = 1.0;
+float rBack = 0.0;
+float gBack = 0.0;
+float bBack = 0.0;
+float rRightOne = 0.0;
+float gRightOne = 0.0;
+float bRightOne = 0.0;
+float rRightTwo = 0.0;
+float gRightTwo = 0.0;
+float bRightTwo = 0.0;
+float rLeftOne = 0.0;
+float gLeftOne = 0.0;
+float bLeftOne = 0.0;
+float rLeftTwo = 0.0;
+float gLeftTwo = 0.0;
+float bLeftTwo = 0.0;
  
 /*  Various global state */
 int toggleAxes = 1;   /* toggle axes on and off */
@@ -44,6 +285,7 @@ int movement_r = 0;
 int movement_l = 0;
 int units_moved = 0;
 int units_needed = 12;
+int currentFace = 0; /* current face: front */
  
 /*  Hexagon vertices */
 GLfloat vertA[3] = { 0.5, 0.5, 0.9};
@@ -103,37 +345,37 @@ void drawShape()
   /* Hexagon */
   glBegin(GL_QUADS);
   /* front  */
-  glColor3f(1.0,1.0,0.0);
+  glColor3f(rFront,gFront,bFront);
   glVertex3fv(vertA);
   glVertex3fv(vertB);
   glVertex3fv(vertC);
   glVertex3fv(vertD);
   /* back  */
-  glColor3f(1.0,0.0,0.0);
+  glColor3f(rBack,gBack,bBack);
   glVertex3fv(vertF);
   glVertex3fv(vertE);
   glVertex3fv(vertH);
   glVertex3fv(vertG);
   /* right 1  */
-  glColor3f(0.0,1.0,0.0);
+  glColor3f(rRightOne,gRightOne,bRightOne);
   glVertex3fv(vertR1);
   glVertex3fv(vertA);
   glVertex3fv(vertD);
   glVertex3fv(vertR2);
   /* right 2  */
-  glColor3f(0.0,0.5,0.0);
+  glColor3f(rRightTwo,gRightTwo,bRightTwo);
   glVertex3fv(vertE);
   glVertex3fv(vertR1);
   glVertex3fv(vertR2);
   glVertex3fv(vertH);
   /* left 1 */
-  glColor3f(0.0,0.0,1.0);
+  glColor3f(rLeftOne,gLeftOne,bLeftOne);
   glVertex3fv(vertB);
   glVertex3fv(vertL1);
   glVertex3fv(vertL2);
   glVertex3fv(vertC);
   /* left 2 */
-  glColor3f(0.0,0.0,0.5);
+  glColor3f(rLeftTwo,gLeftTwo,bLeftTwo);
   glVertex3fv(vertF);
   glVertex3fv(vertL1);
   glVertex3fv(vertL2);
@@ -191,7 +433,150 @@ void reshape(int width,int height)
   glViewport(0,0, width,height);
   project();
 }
- 
+
+void timer() 
+{
+  if(movement_r)
+    {
+      units_moved++;
+      azimuth += 5;
+      if (units_moved == units_needed) {
+        units_moved = 0;
+        movement_r = 0;
+      }
+    }
+  else if (movement_l)
+    {
+      units_moved++;
+      azimuth -= 5;
+      if (units_moved == units_needed) {
+        units_moved = 0;
+        movement_l = 0;
+      }
+    }
+
+    glutTimerFunc( 16, timer, 0 );
+    glutPostRedisplay();
+}
+
+/* 
+*   generateColor()
+*   ----
+*   Generates random new color for given face
+*/
+void generateColor(int face, int direction)
+{
+  float red = (float)rand()/(float)(RAND_MAX);
+  float green = (float)rand()/(float)(RAND_MAX);
+  float blue = (float)rand()/(float)(RAND_MAX);
+
+  // float red;
+  // float green;
+  // float blue;
+
+  // if (direction == 1)
+  // {
+  //   red = 1.0;
+  //   green = 0;
+  //   blue = 0;
+  // }
+  // else
+  // {
+  //   red = 0;
+  //   green = 0;
+  //   blue = 1.0;
+  // }
+
+  switch(face)
+  {
+    case 0:
+      rFront = red;
+      gFront = green;
+      bFront = blue;
+    break;
+    case 1:
+      rRightOne = red;
+      gRightOne = green;
+      bRightOne = blue;
+    break;
+    case 2:
+      rRightTwo = red;
+      gRightTwo = green;
+      bRightTwo = blue;
+    break;
+    case 3:
+      rBack = red;
+      gBack = green;
+      bBack = blue;
+    break;
+    case 4:
+      rLeftTwo = red;
+      gLeftTwo = green;
+      bLeftTwo = blue;
+    break;
+    case 5:
+      rLeftOne = red;
+      gLeftOne = green;
+      bLeftOne = blue;
+    break;
+  }
+
+  // Push color to respective stack
+  push(red, green, blue, direction);
+}
+
+/* 
+*   changeColor()
+*   ----
+*   Decides which face will recieve the new colors
+*/
+void changeColor(int direction)
+{
+  int realFace = currentFace % 6;
+
+  // Right
+  if (direction == 1)
+  {
+    if (left.top < 0)
+    {
+      generateColor(realFace, 0);
+    }
+    else
+    {
+      visit(0);
+    }
+  }
+  // Left
+  else
+  {
+    if (right.top < 0)
+    {
+      generateColor(realFace, 1);
+    }
+    else
+    {
+      visit(1);
+    }
+  }
+}
+
+/* 
+*   changeFace()
+*   ----
+*   Changes current face
+*/
+void changeFace(int movement)
+{
+  if (movement == -1 && currentFace == 0)
+  {
+    currentFace = 5;
+  }
+  else
+  {
+    currentFace += movement;
+  }
+}
+
 /*
  *  windowKey()
  *  ------
@@ -219,10 +604,14 @@ void windowSpecial(int key,int x,int y)
   /*  Right arrow key - increase azimuth by 5 degrees */
   if (key == GLUT_KEY_RIGHT) {
     movement_r = 1;
+    changeFace(-1);
+    changeColor(1);
   }
   /*  Left arrow key - decrease azimuth by 5 degrees */
   else if (key == GLUT_KEY_LEFT) {
     movement_l = 1;
+    changeFace(1);
+    changeColor(0);
   }
  
   /*  Keep angles to +/-360 degrees */
@@ -232,30 +621,6 @@ void windowSpecial(int key,int x,int y)
   project();
   glutPostRedisplay();
 }
-
-void timer() {
-  if(movement_r)
-    {
-      units_moved++;
-      azimuth += 5;
-      if (units_moved == units_needed) {
-        units_moved = 0;
-        movement_r = 0;
-      }
-    }
-  else if (movement_l)
-    {
-      units_moved++;
-      azimuth -= 5;
-      if (units_moved == units_needed) {
-        units_moved = 0;
-        movement_l = 0;
-      }
-    }
-
-    glutTimerFunc( 16, timer, 0 );
-    glutPostRedisplay();
-}
  
 /*
  *  main()
@@ -264,6 +629,12 @@ void timer() {
  */
 int main(int argc,char* argv[])
 {
+  // Declare empty stacks
+  right.top = -1;
+  left.top = -1;
+  initialize(0, 1);
+  initialize(0, 0);
+
   glutInit(&argc,argv);
   glutInitDisplayMode(GLUT_RGB | GLUT_DOUBLE | GLUT_DEPTH);
   glutInitWindowSize(windowWidth,windowHeight);
