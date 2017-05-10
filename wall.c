@@ -229,7 +229,10 @@ int movement_l = 0;
 int units_moved = 0;
 int units_needed = 12;
 int currentFace = 0; /* current face: front */
- 
+
+#define RIGHT 1
+#define LEFT 2
+
 /*  Hexagon vertices */
 GLfloat vertA[3] = { 0.5, 0.5, 0.9};
 GLfloat vertB[3] = {-0.5, 0.5, 0.9};
@@ -631,6 +634,33 @@ void windowSpecial(int key,int x,int y)
   project();
   glutPostRedisplay();
 }
+
+void processMenuEvents(int option) {
+  switch (option) {
+    case RIGHT :
+      movement_r = 1;
+      changeFace(-1);
+      changeColor(1);
+      break;
+    case LEFT :
+      movement_l = 1;
+      changeFace(1);
+      changeColor(0);
+      break;
+  }
+}
+ 
+void createGLUTMenus() {
+ 
+  int menu;
+ 
+  menu = glutCreateMenu(processMenuEvents);
+ 
+  glutAddMenuEntry("->",RIGHT);
+  glutAddMenuEntry("<-",LEFT);
+ 
+  glutAttachMenu(GLUT_LEFT_BUTTON);
+}
  
 /*
  *  main()
@@ -650,6 +680,7 @@ int main(int argc,char* argv[])
   glutInitDisplayMode(GLUT_RGB | GLUT_DOUBLE | GLUT_DEPTH);
   glutInitWindowSize(windowWidth,windowHeight);
   glutCreateWindow(windowName);
+  createGLUTMenus();
  
   glutDisplayFunc(display);
   glutReshapeFunc(reshape);
