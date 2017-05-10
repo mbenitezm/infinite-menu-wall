@@ -18,71 +18,57 @@
 #endif
 #endif
 
-/* ============== STACK STRUCT ============== */
+/* ============== COLOR LIST METHODS ============== */
 
 #define MAXSIZE 100
+#define RGBSIZE 3
 
-struct Stack
-{
-  float stack [MAXSIZE][3];
-  int top;
-};
-typedef struct Stack STACK;
-
-STACK right;
-STACK left;
+float right[MAXSIZE][RGBSIZE];
+float left[MAXSIZE][RGBSIZE];
 
 /* List globals */
 float currentRed;
 float currentGreen;
 float currentBlue;
+int currentColor;
 
 /* List functions */
-void push(float r, float g, float b, int direction);
-void visit(int direction);
-int isEmpty(int direction);
+void push(float r, float g, float b, int direction, int index);
+int isEmpty(int direction, int index);
 void initialize(int start, int direction);
 
 /*
  * push()
  * ------
- * Push value if array space is empty
+ * Push value to array
  */
-void push(float r, float g, float b, int direction)
+void push(float r, float g, float b, int direction, int index)
 {
   // Right
   if (direction == 1)
   {
-    if (right.top == MAXSIZE)
+    if (index == MAXSIZE)
     {
-      printf("Right stack full\n");
+      printf("Right list full\n");
     }
     else
     {
-      if (isEmpty(direction) == 1)
-      {
-        right.top = right.top + 1;
-        right.stack[right.top][0] = r;
-        right.stack[right.top][1] = g;
-        right.stack[right.top][2] = b;
-      }
+      right[index][0] = r;
+      right[index][1] = g;
+      right[index][2] = b;
     }
   }
   // Left
   else
   {
-    if (left.top == MAXSIZE)
+    if (index == MAXSIZE)
     {
       printf("Left stack full\n"); 
     }
     else {
-      if (isEmpty(direction) == 1)
-      {
-        left.top = left.top + 1;
-        left.stack[left.top][0] = r;
-        left.stack[left.top][1] = g;
-        left.stack[left.top][2] = b;
-      }
+      left[index][0] = r;
+      left[index][1] = g;
+      left[index][2] = b;
     }
   }
 }
@@ -92,67 +78,24 @@ void push(float r, float g, float b, int direction)
  * ------
  * Check value if is empty
  */
-int isEmpty(int direction)
+int isEmpty(int direction, int index)
 {
   // Right
   if (direction == 1)
-  {
-    if (right.top == -1)
+  {  
+    if (right[index][0] == -1)
     {
       return 1;
     }
-    else
-    {
-      if (right.stack[right.top][0] == -1)
-      {
-        return 1;
-      }
-
-      return 0;
-    }
+    return 0;
   }
   else
   {
-    if (left.top == -1)
+    if (left[index][0] == -1)
     {
       return 1;
-    }
-    else
-    {
-      if (left.stack[left.top][0] == -1)
-      {
-        return 1;
-      }
-      
-      return 0;
-    }
-  }
-}
-
-/*
- * visit()
- * ------
- * Visits current list space
- */
-void visit(int direction)
-{
-  // Right
-  if (direction == 1)
-  {
-    currentRed = right.stack[right.top][0];
-    currentGreen = right.stack[right.top][1];
-    currentBlue = right.stack[right.top][2];
-
-    right.top = right.top - 1;
-  }
-  // Left
-  else
-  {
-    currentRed = left.stack[left.top][0];
-    currentGreen = left.stack[left.top][1];
-    currentBlue = left.stack[left.top][2];
-
-    left.top = left.top - 1;
+    } 
+    return 0;
   }
 }
 
@@ -167,18 +110,18 @@ void initialize(int start, int direction)
   {
     for (int i = start; i < MAXSIZE; i ++)
     {
-      right.stack[i][0] = -1;
-      right.stack[i][1] = -1;
-      right.stack[i][2] = -1;
+      right[i][0] = -1;
+      right[i][1] = -1;
+      right[i][2] = -1;
     }
   }
   else
   {
     for (int i = start; i < MAXSIZE; i ++)
     {
-      left.stack[i][0] = -1;
-      left.stack[i][1] = -1;
-      left.stack[i][2] = -1;
+      left[i][0] = -1;
+      left[i][1] = -1;
+      left[i][2] = -1;
     } 
   }
 }
@@ -462,30 +405,13 @@ void timer()
 /* 
 *   generateColor()
 *   ----
-*   Generates random new color for given face
+*   Generates random new color for a face
 */
-void generateColor(int face, int direction)
+void generateColor(int face, int direction, int index)
 {
   float red = (float)rand()/(float)(RAND_MAX);
   float green = (float)rand()/(float)(RAND_MAX);
   float blue = (float)rand()/(float)(RAND_MAX);
-
-  // float red;
-  // float green;
-  // float blue;
-
-  // if (direction == 1)
-  // {
-  //   red = 1.0;
-  //   green = 0;
-  //   blue = 0;
-  // }
-  // else
-  // {
-  //   red = 0;
-  //   green = 0;
-  //   blue = 1.0;
-  // }
 
   switch(face)
   {
@@ -521,8 +447,76 @@ void generateColor(int face, int direction)
     break;
   }
 
-  // Push color to respective stack
-  push(red, green, blue, direction);
+  push(red, green, blue, direction, index);
+}
+
+/* 
+*   assignColor()
+*   ----
+*   Assigns color for a face
+*/
+void assignColor(int face, int direction, int index)
+{
+  float red, green, blue;
+
+  if (direction == 1)
+  {
+    red = right[index][0];
+    green = right[index][1];
+    blue = right[index][2];
+  }
+  else
+  {
+    red = left[index][0];
+    green = left[index][1];
+    blue = left[index][2];
+  }
+
+  switch(face)
+  {
+    case 0:
+      rFront = red;
+      gFront = green;
+      bFront = blue;
+    break;
+    case 1:
+      rRightOne = red;
+      gRightOne = green;
+      bRightOne = blue;
+    break;
+    case 2:
+      rRightTwo = red;
+      gRightTwo = green;
+      bRightTwo = blue;
+    break;
+    case 3:
+      rBack = red;
+      gBack = green;
+      bBack = blue;
+    break;
+    case 4:
+      rLeftTwo = red;
+      gLeftTwo = green;
+      bLeftTwo = blue;
+    break;
+    case 5:
+      rLeftOne = red;
+      gLeftOne = green;
+      bLeftOne = blue;
+    break;
+  }
+}
+
+/* 
+*   changeColor()
+*   ----
+*   Reset color of front initial face
+*/
+void resetColor(int realFace)
+{
+  rFront = 1.0;
+  gFront = 1.0;
+  bFront = 1.0;
 }
 
 /* 
@@ -533,29 +527,45 @@ void generateColor(int face, int direction)
 void changeColor(int direction)
 {
   int realFace = currentFace % 6;
+  int index;
 
   // Right
   if (direction == 1)
   {
-    if (left.top < 0)
-    {
-      generateColor(realFace, 0);
-    }
-    else
-    {
-      visit(0);
-    }
+    currentColor -= 1;
   }
   // Left
   else
   {
-    if (right.top < 0)
+    currentColor += 1;
+  }
+
+  if (currentColor == 0)
+  {
+    resetColor(realFace);
+  }
+  else if (currentColor < 0)
+  {
+    index = (currentColor + 1) * -1;
+    if(isEmpty(0, index) == 1)
     {
-      generateColor(realFace, 1);
+      generateColor(realFace, 0, index);
     }
     else
     {
-      visit(1);
+      assignColor(realFace, 0, index);
+    }
+  }
+  else
+  {
+    index = currentColor - 1;
+    if (isEmpty(1, index) == 1)
+    {
+      generateColor(realFace, 1, index);
+    }
+    else
+    {
+      assignColor(realFace, 1, index);
     }
   }
 }
@@ -629,11 +639,12 @@ void windowSpecial(int key,int x,int y)
  */
 int main(int argc,char* argv[])
 {
-  // Declare empty stacks
-  right.top = -1;
-  left.top = -1;
+  // Initialize empty stacks
   initialize(0, 1);
   initialize(0, 0);
+
+  // Initialize first color
+  currentColor = 0;
 
   glutInit(&argc,argv);
   glutInitDisplayMode(GLUT_RGB | GLUT_DOUBLE | GLUT_DEPTH);
